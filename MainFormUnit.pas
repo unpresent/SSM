@@ -270,6 +270,7 @@ uses
 
 procedure TMainForm.ActionDoCompareExecute(Sender: TObject);
 begin
+  // Вызываем Мастер сравнения
   MainDataModule.ShowComparerForm(SolutionExplorerViewer.CurrentNode);
 end;
 
