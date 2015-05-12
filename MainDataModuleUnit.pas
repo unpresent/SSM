@@ -2380,6 +2380,7 @@ begin
   ScriptsSort;
 
   // ------------------------------------
+  // TODO: Понять почему всегда возвращает узел, даже если его нет.
   LINodeFilter := AXMLNode.ChildNodes[CNode_Filter];
   if Assigned(LINodeFilter) then begin
     FilterCreate;
