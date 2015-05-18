@@ -1,36 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.136,=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.908,=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.756,=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.344,D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.dfm=D:\Work\Projects\SQLScriptMaker\Unit1.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.059,=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.144,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainDataModuleUnit.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.903,C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainFormUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.903,C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainFormUnit.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.378,D:\Work\Projects\SQLScriptMaker\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SSMPatchEditorFormUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.344,D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.052,D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.pas=D:\Work\Projects\SQLScriptMaker\SSMBaseFormUnit.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.870,D:\Work\Projects\SQLScriptMaker\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.261,C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Project1.dproj=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\SQLScriptMaker.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.376,D:\Work\Projects\SQLScriptMaker\SSMComparerFormUnit.pas=D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.052,D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\SSMBaseFormUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.398,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.641,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.927,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.376,D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.pas=D:\Work\Projects\SQLScriptMaker\SSMComparerFormUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.136,=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.144,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainDataModuleUnit.pas=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.052,D:\Work\Projects\SQLScriptMaker\SSMBaseFormUnit.pas=D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.376,D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.dfm=D:\Work\Projects\SQLScriptMaker\SSMComparerFormUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.344,D:\Work\Projects\SQLScriptMaker\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.870,D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.378,D:\Work\Projects\SQLScriptMaker\SSMPatchEditorFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.052,D:\Work\Projects\SQLScriptMaker\SSMBaseFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.378,D:\Work\Projects\SQLScriptMaker\SSMPatchEditorFormUnit.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.206,D:\Work\Projects\SQLScriptMaker\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SSMFilterEditorFormUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.870,D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.261,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\SQLScriptMaker.dproj=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.903,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainFormUnit.pas=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.531,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.870,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SSBaseFormUnit.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.076,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.335,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.378,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SSMPatchEditorFormUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.927,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.344,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.398,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.641,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.816,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SSMSolutionExplorer.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.855,D:\Work\Projects\SQLScriptMaker\SqlScriptMakerUtils.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.144,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.dfm=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainDataModuleUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.816,D:\Work\Projects\SQLScriptMaker\SSMSolutionExplorer.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.376,D:\Work\Projects\SQLScriptMaker\SSMComparerFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\SSMComparerUnit.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.792,D:\Work\Projects\SQLScriptMaker\SqlScriptMakerUtils.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>2015.05.11 17:20:47.335,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>2015.05.11 17:21:25.206,D:\Work\Projects\SQLScriptMaker\SSMFilterEditorFormUnit.pas=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
-    <Transaction>2015.05.11 17:21:25.206,D:\Work\Projects\SQLScriptMaker\SSMFilterEditorFormUnit.dfm=D:\Work\Projects\SQLScriptMaker\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.144,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainDataModuleUnit.dfm=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.059,=D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.903,D:\Work\Projects\SQLScriptMaker\SQLScriptMaker.DXE\MainFormUnit.dfm=C:\Users\gagarkin\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.792,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SqlScriptMakerUtils.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.335,=D:\Work\Projects\SQLScriptMaker\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.206,D:\Work\Projects\SQLScriptMaker\Unit1.pas=D:\Work\Projects\SQLScriptMaker\SSMFilterEditorFormUnit.pas</Transaction>
   </Transactions>
 </BorlandProject>

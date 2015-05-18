@@ -149,7 +149,8 @@ type
 implementation
 
 uses
-  SBaseFileUtils;
+  SBaseFileUtils,
+  SSMSolutionExplorer;
 
 const
   CTreeNodeType_Directory       : String = 'D';
@@ -158,6 +159,8 @@ const
   CNodeAction_UpdateScript      : String = 'UPDATE';
   CNodeAction_DeleteScript      : String = 'DELETE';
   CNodeAction_NewScript         : String = 'NEW';
+  CNodeAction_AddScript         : String = 'ADD';
+  CNodeAction_AddUpdateScript   : String = 'ADD+UPDATE';
 
   CError_NotParsedObjectName    : String = 'Нет определено имя SQL-объекта';
   CError_NotFoundObjectInSource : String = 'Нет в эталоне';
@@ -254,49 +257,76 @@ end;
 procedure TSSMComparerForm.ActionScriptsUpdateExecute(Sender: TObject);
 var
   LNodeSource     : TSSMNode;
+  LNodeWork       : TSSMNode;
   LDefinition     : TStrings;
   LObjectName     : String;
   LSourceScript   : String;
   LBookmark       : TBookmark;
+  LScriptName     : String;
   LScriptFullName : String;
+
+  LAction         : String;
+
+  procedure _AddScriptToWorkNode;
+  begin
+    LNodeWork :=  TSSMNode(Pointer( Integer(IsNull(ScriptsDataSet.FieldValues['WorkSourceNode_Ptr'], 0))));
+    if Assigned(LNodeWork) and (LNodeWork.InheritsFrom(TSSMFolder)) then begin
+      LScriptName := ScriptsDataSet.FieldValues['Script'];
+      TSSMFolder(LNodeWork).ScriptAddByShortName(LScriptName);
+    end;
+  end;
+
 begin
   LNodeSource := ParamToSSNNode('Source_Ptr');
 
-  ScriptsDataSet.DisableControls;
-  LDefinition := TStringList.Create;
+  SolutionExplorerViewer.BeginUpdate;
   try
-    LBookmark := ScriptsDataSet.GetBookmark;
+    ScriptsDataSet.DisableControls;
+    LDefinition := TStringList.Create;
     try
-      ScriptsDataSet.First;
-      while (not ScriptsDataSet.Eof) do begin
-        if  VarIsEqual(ScriptsDataSet.FieldValues['Selected'], True)
-        and VarIsEqual(ScriptsDataSet.FieldValues['NodeType'], CTreeNodeType_Script) then begin
+      LBookmark := ScriptsDataSet.GetBookmark;
+      try
+        ScriptsDataSet.First;
+        while (not ScriptsDataSet.Eof) do begin
+          if  VarIsEqual(ScriptsDataSet.FieldValues['Selected'], True)
+          and VarIsEqual(ScriptsDataSet.FieldValues['NodeType'], CTreeNodeType_Script) then begin
+            LAction := ScriptsDataSet.FieldValues['Action'];
+            if (LAction = CNodeAction_UpdateScript)
+            or (LAction = CNodeAction_AddUpdateScript)
+            or (LAction = CNodeAction_NewScript) then begin
+              if LNodeSource.InheritsFrom(TSSMSource) then begin
+                // Из БД надо вытащить обновление
+                LObjectName := ScriptsDataSet.FieldValues['ObjectName'];
+                LScriptFullName := ScriptsDataSet.FieldValues['ScriptFullName'];
+                LDefinition.Clear;
+                TMainDataModule.LoadDefinition_FromSource(TSSMSource(LNodeSource).Connection, LObjectName, LDefinition);
+                LDefinition.SaveToFile(LScriptFullName);
+                if (LAction = CNodeAction_NewScript) then
+                  _AddScriptToWorkNode;
+              end else if LNodeSource.InheritsFrom(TSSMFolder) then begin
+                // Имя файла-назначения
+                LSourceScript := ScriptsDataSet.FieldValues['ScriptInSource'];
+                LScriptFullName := ScriptsDataSet.FieldValues['ScriptFullName'];
+                if FileExists(LSourceScript) then
+                  CopyFile(PWideChar(LSourceScript), PWideChar(LScriptFullName), False);
+              end;
+            end else if (LAction = CNodeAction_AddScript) then begin
+              _AddScriptToWorkNode;
+            end;
 
-          if LNodeSource.InheritsFrom(TSSMSource) then begin
-            // Из БД надо вытащить обновление
-            LObjectName := ScriptsDataSet.FieldValues['ObjectName'];
-            LScriptFullName := ScriptsDataSet.FieldValues['ScriptFullName'];
-            LDefinition.Clear;
-            TMainDataModule.LoadDefinition_FromSource(TSSMSource(LNodeSource).Connection, LObjectName, LDefinition);
-            LDefinition.SaveToFile(LScriptFullName);
-          end else if LNodeSource.InheritsFrom(TSSMFolder) then begin
-            // Имя файла-назначения
-            LSourceScript := ScriptsDataSet.FieldValues['ScriptInSource'];
-            LScriptFullName := ScriptsDataSet.FieldValues['ScriptFullName'];
-            if FileExists(LSourceScript) then
-              CopyFile(PWideChar(LSourceScript), PWideChar(LScriptFullName), False);
-          end;
-
-          ScriptsDataSet.Delete;
-        end else
-          ScriptsDataSet.Next;
+            ScriptsDataSet.Delete;
+          end else
+            ScriptsDataSet.Next;
+        end;
+      finally
+        ScriptsDataSet.GotoBookmark(LBookmark);
       end;
     finally
-      ScriptsDataSet.GotoBookmark(LBookmark);
+      LDefinition.Free;
+      ScriptsDataSet.EnableControls;
     end;
   finally
-    LDefinition.Free;
-    ScriptsDataSet.EnableControls;
+    SolutionExplorerViewer.EndUpdate;
   end;
 end;
 
@@ -379,6 +409,10 @@ begin
 
     if AAсtion = CNodeAction_NewScript then
       LIconIndex := CIconIndex_ScriptNew
+    else if AAсtion = CNodeAction_AddScript then
+      LIconIndex := CIconIndex_ScriptAdd
+    else if AAсtion = CNodeAction_AddUpdateScript then
+      LIconIndex := CIconIndex_ScriptAddUpd
     else if AAсtion = CNodeAction_DeleteScript then
       LIconIndex := CIconIndex_ScriptDel
     else
@@ -449,6 +483,7 @@ var
   LSourceGenScripts : TStringList;
 
   LScript           : TSSMScript;
+  LScriptFullName   : String;
   LObjectName       : String;
   LObjectIndex      : Integer;
 
@@ -471,15 +506,17 @@ var
     end;
   end;
 
-  procedure _LoadAndCompare();
+  function _LoadAndCompare(AScriptFullName : String; AAction : String): Boolean;
   begin
+    Result := False;
     if TMainDataModule.LoadDefinition_FromSource(ASource.Connection, LObjectName, LDefinitionSource) then begin
       // Прочитали Definition, теперь сравниваем
       if not TMainDataModule.IsStringsEqual(LDefinitionSource, LDefinitionWork) then begin
         // Есть различия. Перед добавленем скрипта надо добавить папку, в которую пизать скрипты будем
         _CheckAddedFolder;
         // Добавляем в список различий собственно скрипт
-        AddScriptRow(LParentRowId, LScript.Name, LScript.FullName, '', LObjectName, CNodeAction_UpdateScript, ASource, AFolder);
+        AddScriptRow(LParentRowId, ExtractFileName(AScriptFullName), AScriptFullName, '', LObjectName, AAction, ASource, AFolder);
+        Result := True;
       end;
     end;
   end;
@@ -519,7 +556,7 @@ begin
           // Объект не найден в списке по Фильтру; файл - кандидат на удаление
           AddErrorRow(LScript.FullName, LObjectName, 'NOT:FOUND', CError_NotFoundObjectInSource, LScript);
         end else begin
-          _LoadAndCompare;
+          _LoadAndCompare(LScript.FullName, CNodeAction_UpdateScript);
           LSourceObjects.Delete(LObjectIndex);
           LSourceGenScripts.Delete(LObjectIndex);
         end;
@@ -527,7 +564,7 @@ begin
         // Если нет фильтра, то работаем по фактическим скриптам
         if TMainDataModule.CheckObjectExists_FromSource(ASource.Connection, LObjectName) then begin
           // Объект есть в БД
-          _LoadAndCompare;
+          _LoadAndCompare(LScript.FullName, CNodeAction_UpdateScript);
         end else begin
           // Объект не найден в БД; файл - кандидат на удаление
           AddErrorRow(LScript.FullName, LObjectName, 'NOT:FOUND', CError_NotFoundObjectInSource, LScript)
@@ -541,7 +578,19 @@ begin
       _CheckAddedFolder;
 
       for I := 0 to LSourceObjects.Count - 1 do begin
-        AddScriptRow(LParentRowId, LSourceGenScripts[I], PathCheckDivver(AFolder.FullName) + LSourceGenScripts[I], '',  LSourceObjects[I], CNodeAction_NewScript, ASource, AFolder);
+        LScriptFullName := PathCheckDivver(AFolder.FullName) + LSourceGenScripts[I];
+        if not FileExists(LScriptFullName) then begin
+          // К созданию нового скрипта
+          AddScriptRow(LParentRowId, LSourceGenScripts[I], LScriptFullName, '',  LSourceObjects[I], CNodeAction_NewScript, ASource, AFolder);
+        end else begin
+          LDefinitionWork.Clear;
+          if TMainDataModule.LoadDefinition_FromScript(LScriptFullName, LObjectName, LDefinitionWork) then begin
+            // Если будут отличаться
+            if not _LoadAndCompare(LScriptFullName, CNodeAction_AddUpdateScript) then
+              // К добавлению в список скриптов существующий
+              AddScriptRow(LParentRowId, LSourceGenScripts[I], LScriptFullName, '',  LSourceObjects[I], CNodeAction_AddScript, ASource, AFolder);
+          end;
+        end;
       end;
     end;
 
@@ -693,12 +742,20 @@ procedure TSSMComparerForm.ExecuteComparer(AAppSettingName, AParamsSettingName: 
     Result := Result.Replace('%title' + Integer.ToString(ANumber) + '%', AScript.Name + '; Объект ' + AObjectName);
   end;
 
+  function _UpdatesParams(ASParams : String; ANumber: Integer; AScriptFullName: String; AObjectName : String): String;
+  begin
+    Result := ASParams;
+    Result := Result.Replace('%file' + Integer.ToString(ANumber) + '%', AScriptFullName);
+    Result := Result.Replace('%title' + Integer.ToString(ANumber) + '%', ExtractFileName(AScriptFullName) + '; Объект ' + AObjectName);
+  end;
+
 var
   LComparerApp    : Variant;
   LSComparer      : String;
   LComparerParams : Variant;
   LSParams        : String;
-  LScript         : Variant;
+  LScriptFullName : Variant;
+  LScriptInSource : Variant;
 
   LNode1          : TSSMNode;
   LNode2          : TSSMNode;
@@ -707,9 +764,8 @@ var
   LPath           : String;
 begin
   inherited;
-  LScript := ScriptsDataSet.FieldValues['Script'];
-  if not VarIsPresent(LScript) then
-    Exit;
+  LScriptFullName := ScriptsDataSet.FieldValues['ScriptFullName'];
+  LScriptInSource := ScriptsDataSet.FieldValues['ScriptInSource'];
 
   LComparerApp := MainDataModule.Settings[CSettingGroup_Comperers, AAppSettingName];
   if not VarIsPresent(LComparerApp) then
@@ -728,25 +784,24 @@ begin
   LNode1 := TSSMNode( Pointer(Integer( IsNull(ScriptsDataSet.FieldValues['SourceNode_Ptr'], 0) )) );
   LNode2 := TSSMNode( Pointer(Integer( IsNull(ScriptsDataSet.FieldValues['WorkSourceNode_Ptr'], 0) )) );
 
-  if not Assigned(LNode1) then
-    Exit;
-  if not Assigned(LNode2) then
-    Exit;
-
   LPath := ExtractFilePath(ApplicationExeName);
 
   if LNode1.InheritsFrom(TSSMSource) then begin
     LSParams := _UpdatesParamsFromSource(LSParams, 1, TSSMSource(LNode1), LObjectName);
-  end else if LNode1.InheritsFrom(TSSMScript) then begin
-    LSParams := _UpdatesParamsFromScript(LSParams, 1, TSSMScript(LNode1), LObjectName);
-    LPath := ExtractFilePath(TSSMScript(LNode1).FullName);
+  end else begin
+    if not VarIsPresent(LScriptInSource) then
+      Exit;
+    LSParams := _UpdatesParams(LSParams, 1, LScriptInSource, LObjectName);
+    LPath := ExtractFilePath(LScriptInSource);
   end;
 
   if LNode2.InheritsFrom(TSSMSource) then begin
     LSParams := _UpdatesParamsFromSource(LSParams, 2, TSSMSource(LNode2), LObjectName);
-  end else if LNode2.InheritsFrom(TSSMScript) then begin
-    LSParams := _UpdatesParamsFromScript(LSParams, 2, TSSMScript(LNode2), LObjectName);
-    LPath := ExtractFilePath(TSSMScript(LNode2).FullName);
+  end else begin
+    if not VarIsPresent(LScriptFullName) then
+      Exit;
+    LSParams := _UpdatesParams(LSParams, 2, LScriptFullName, LObjectName);
+    LPath := ExtractFilePath(LScriptFullName);
   end;
 
   Winapi.ShellAPI.ShellExecute

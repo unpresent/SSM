@@ -344,7 +344,7 @@ begin
       if not LFilter.Hidden then begin
         LNode := SeekNode(LNode, LFilter, TSSMFilter);
         if not Assigned(LNode) then
-          LNode := AParentNode.AddChild;
+          LNode := AParentNode.AddChildFirst;
 
         RefreshFilter(LFilter, LNode);
       end;

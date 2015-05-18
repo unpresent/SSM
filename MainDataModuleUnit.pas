@@ -554,6 +554,8 @@ const
   CIconIndex_ScriptNew              : Integer = 28;
   CIconIndex_ScriptDel              : Integer = 29;
   CIconIndex_ScriptUpd              : Integer = 16;
+  CIconIndex_ScriptAdd              : Integer = 25;
+  CIconIndex_ScriptAddUpd           : Integer = 31;
 
   CFileExt_Solution                 : String = 'ssxsl';
   CFileExt_Project                  : String = 'ssxpj';
@@ -2381,7 +2383,7 @@ begin
 
   // ------------------------------------
   // TODO: Понять почему всегда возвращает узел, даже если его нет.
-  LINodeFilter := AXMLNode.ChildNodes[CNode_Filter];
+  LINodeFilter := AXMLNode.ChildNodes.FindNode(CNode_Filter);
   if Assigned(LINodeFilter) then begin
     FilterCreate;
     Filter.LoadFromXml(LINodeFilter);
@@ -2457,6 +2459,7 @@ begin
   
   Result := ScriptNew;
   Result.FName := AScriptShortName;
+  Result.DoStoreChanged;
 end;
 
 function TSSMFolder.ScriptByName(AScriptName: String): TSSMScript;
