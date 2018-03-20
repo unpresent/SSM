@@ -141,6 +141,7 @@ type
     function GetRowId : Integer;
 
     procedure CheckShowErrors;
+    procedure CheckActionUpdate;
   public
     constructor Create(AOwner : TComponent; AParams : TNamedVariants); override;
     procedure RefreshActions;
@@ -156,6 +157,10 @@ const
   CTreeNodeType_Directory       : String = 'D';
   CTreeNodeType_Script          : String = 'S';
 
+  CSourceType_Project           : String = '<P>';  // Project
+  CSourceType_Source            : String = '<S>';  // Source
+  CSourceType_Folder            : String = '<F>';  // Folder
+
   CNodeAction_UpdateScript      : String = 'UPDATE';
   CNodeAction_DeleteScript      : String = 'DELETE';
   CNodeAction_NewScript         : String = 'NEW';
@@ -165,6 +170,14 @@ const
   CError_NotParsedObjectName    : String = 'Нет определено имя SQL-объекта';
   CError_NotFoundObjectInSource : String = 'Нет в эталоне';
   CError_NotFoundObjectInWork   : String = 'Нет в рабочей папке';
+
+
+  CField_Selected               : String = 'Selected';
+  CField_Source_Ptr             : String = 'Source_Ptr';
+  CField_Work_Ptr               : String = 'Work_Ptr';
+  CField_ScanSubFolders         : String = 'ScanSubFolders';
+
+  CField_NodeType               : String = 'NodeType';
 
 
 procedure UpdateAllDataSet(ADataSet : TDataSet; AFieldName: String; AValue : Variant);
@@ -220,13 +233,13 @@ end;
 procedure TSSMComparerForm.ActionErrorsSelectAllExecute(Sender: TObject);
 begin
   inherited;
-  UpdateAllDataSet(ErrorsDataSet, 'Selected', True);
+  UpdateAllDataSet(ErrorsDataSet, CField_Selected, True);
 end;
 
 procedure TSSMComparerForm.ActionErrorsUnSelectAllExecute(Sender: TObject);
 begin
   inherited;
-  UpdateAllDataSet(ErrorsDataSet, 'Selected', False);
+  UpdateAllDataSet(ErrorsDataSet, CField_Selected, False);
 end;
 
 procedure TSSMComparerForm.ActionRunExecute(Sender: TObject);
@@ -241,8 +254,8 @@ begin
       ScriptsDataSet.Clear;
       ErrorsDataSet.Clear;
 
-      LNodeSource := ParamToSSNNode('Source_Ptr');
-      LNodeWork := ParamToSSNNode('Work_Ptr');
+      LNodeSource := ParamToSSNNode(CField_Source_Ptr);
+      LNodeWork := ParamToSSNNode(CField_Work_Ptr);
       Compare_Nodes(Null, LNodeSource, LNodeWork);
 
     finally
@@ -251,6 +264,7 @@ begin
     end;
   finally
     CheckShowErrors;
+    CheckActionUpdate;
   end;
 end;
 
@@ -272,12 +286,13 @@ var
     LNodeWork :=  TSSMNode(Pointer( Integer(IsNull(ScriptsDataSet.FieldValues['WorkSourceNode_Ptr'], 0))));
     if Assigned(LNodeWork) and (LNodeWork.InheritsFrom(TSSMFolder)) then begin
       LScriptName := ScriptsDataSet.FieldValues['Script'];
-      TSSMFolder(LNodeWork).ScriptAddByShortName(LScriptName);
+      if not Assigned(TSSMFolder(LNodeWork).ScriptByName(LScriptName)) then
+        TSSMFolder(LNodeWork).ScriptAddByShortName(LScriptName);
     end;
   end;
 
 begin
-  LNodeSource := ParamToSSNNode('Source_Ptr');
+  LNodeSource := ParamToSSNNode(CField_Source_Ptr);
 
   SolutionExplorerViewer.BeginUpdate;
   try
@@ -288,8 +303,8 @@ begin
       try
         ScriptsDataSet.First;
         while (not ScriptsDataSet.Eof) do begin
-          if  VarIsEqual(ScriptsDataSet.FieldValues['Selected'], True)
-          and VarIsEqual(ScriptsDataSet.FieldValues['NodeType'], CTreeNodeType_Script) then begin
+          if  VarIsEqual(ScriptsDataSet.FieldValues[CField_Selected], True)
+          and VarIsEqual(ScriptsDataSet.FieldValues[CField_NodeType], CTreeNodeType_Script) then begin
             LAction := ScriptsDataSet.FieldValues['Action'];
             if (LAction = CNodeAction_UpdateScript)
             or (LAction = CNodeAction_AddUpdateScript)
@@ -324,6 +339,7 @@ begin
     finally
       LDefinition.Free;
       ScriptsDataSet.EnableControls;
+      CheckActionUpdate;
     end;
   finally
     SolutionExplorerViewer.EndUpdate;
@@ -332,12 +348,14 @@ end;
 
 procedure TSSMComparerForm.ActionSelectAllExecute(Sender: TObject);
 begin
-  UpdateAllDataSet(ScriptsDataSet, 'Selected', True);
+  UpdateAllDataSet(ScriptsDataSet, CField_Selected, True);
+  CheckActionUpdate;
 end;
 
 procedure TSSMComparerForm.ActionUnSelectAllExecute(Sender: TObject);
 begin
-  UpdateAllDataSet(ScriptsDataSet, 'Selected', False);
+  UpdateAllDataSet(ScriptsDataSet, CField_Selected, False);
+  CheckActionUpdate;
 end;
 
 function TSSMComparerForm.AddErrorRow(AScript, AObjectName, AErrorCode, AMessage: String; ANode : TSSMNode): Integer;
@@ -357,7 +375,7 @@ begin
     ErrorsDataSet.FieldValues['ErrorCode'] := AErrorCode;
     ErrorsDataSet.FieldValues['Message'] := AMessage;
 
-    ErrorsDataSet.FieldValues['Selected'] := False;
+    ErrorsDataSet.FieldValues[CField_Selected] := False;
 
     ErrorsDataSet.FieldValues['Node_Ptr'] := Integer(Pointer( ANode ));
 
@@ -383,8 +401,8 @@ begin
 
     ScriptsDataSet.FieldValues['ParentRowId'] := AParentRowId;
     ScriptsDataSet.FieldValues['NodeName'] := AFolderName;
-    ScriptsDataSet.FieldValues['NodeType'] := CTreeNodeType_Directory;
-    ScriptsDataSet.FieldValues['Selected'] := False;
+    ScriptsDataSet.FieldValues[CField_NodeType] := CTreeNodeType_Directory;
+    ScriptsDataSet.FieldValues[CField_Selected] := False;
 
     ScriptsDataSet.Post;
   finally
@@ -425,7 +443,7 @@ begin
 
     ScriptsDataSet.FieldValues['ParentRowId'] := AParentRowId;
     ScriptsDataSet.FieldValues['NodeName'] := AScript;
-    ScriptsDataSet.FieldValues['NodeType'] := CTreeNodeType_Script;
+    ScriptsDataSet.FieldValues[CField_NodeType] := CTreeNodeType_Script;
     ScriptsDataSet.FieldValues['Script'] := AScript;
     ScriptsDataSet.FieldValues['ScriptFullName'] := AScriptFullName;
     ScriptsDataSet.FieldValues['ScriptInSource'] := AScriptInSource;
@@ -433,13 +451,37 @@ begin
     ScriptsDataSet.FieldValues['ObjectName'] := AObjectName;
 
     ScriptsDataSet.FieldValues['Action'] := AAсtion;
-    ScriptsDataSet.FieldValues['Selected'] := False;
+    ScriptsDataSet.FieldValues[CField_Selected] := False;
 
     ScriptsDataSet.FieldValues['SourceNode_Ptr'] := Integer( Pointer(ASourceNode) );
     ScriptsDataSet.FieldValues['WorkSourceNode_Ptr'] := Integer( Pointer(AWorkNode) );
 
     ScriptsDataSet.Post;
   finally
+    ScriptsDataSet.EnableControls;
+  end;
+end;
+
+procedure TSSMComparerForm.CheckActionUpdate;
+var
+  LBmk      : TBookmark;
+begin
+  ScriptsDataSet.DisableControls;
+  LBmk := ScriptsDataSet.Bookmark;
+  try
+    ScriptsDataSet.First;
+    while not ScriptsDataSet.Eof do begin
+      if  VarIsEqual(ScriptsDataSet.FieldValues[CField_NodeType], CTreeNodeType_Script)
+      and VarIsEqual(ScriptsDataSet.FieldValues[CField_Selected], True) then begin
+        ActionScriptsUpdate.Enabled := True;
+        Exit;
+      end;
+      ScriptsDataSet.Next;
+    end;
+    ActionScriptsUpdate.Enabled := False;
+  finally
+    if ScriptsDataSet.BookmarkValid(LBmk) then
+      ScriptsDataSet.GotoBookmark(LBmk);
     ScriptsDataSet.EnableControls;
   end;
 end;
@@ -463,6 +505,9 @@ begin
 end;
 
 procedure TSSMComparerForm.Compare_Nodes(AParentRowId: Variant; ASourceNode, AWorkNode: TSSMNode);
+var
+  I         : Integer;
+  LProject  : TSSMProject;
 begin
   if ASourceNode.InheritsFrom(TSSMSource) and AWorkNode.InheritsFrom(TSSMSource) then
     Compare_SourceToSource(AParentRowId, TSSMSource(ASourceNode), TSSMSource(AWorkNode))
@@ -470,7 +515,11 @@ begin
     Compare_SourceToFodler(AParentRowId, TSSMSource(ASourceNode), TSSMFolder(AWorkNode))
   else if ASourceNode.InheritsFrom(TSSMFolder) and AWorkNode.InheritsFrom(TSSMFolder) then
     Compare_FolderToFodler(AParentRowId, TSSMFolder(ASourceNode), TSSMFolder(AWorkNode))
-  else
+  else if ASourceNode.InheritsFrom(TSSMSource) and AWorkNode.InheritsFrom(TSSMProject) then begin
+    LProject := TSSMProject(AWorkNode);
+    for I := 0 to LProject.FoldersCount - 1 do
+      Compare_SourceToFodler(AParentRowId, TSSMSource(ASourceNode), LProject.Folders[I]);
+  end else
     raise ESSMStructureError.Create('Недопустимые типы узлов для мастера сравнения!');
 end;
 
@@ -595,7 +644,7 @@ begin
     end;
 
     // Если установлена опция скнировать и подпапки, то
-    if VarIsEqual(ParamsDataSet.FieldValues['ScanSubFolders'], True) then begin
+    if VarIsEqual(ParamsDataSet.FieldValues[CField_ScanSubFolders], True) then begin
       _CheckAddedFolder;
       for I := 0 to AFolder.FoldersCount-1 do begin
         if AFolder.Folders[I].ScriptsCount > 0 then
@@ -634,7 +683,17 @@ constructor TSSMComparerForm.Create(AOwner: TComponent; AParams: TNamedVariants)
     if not VarIsPresent(ObjectsSourcesDataSet.Lookup('ObjectPtr', Integer(Pointer(ANode)), 'ObjectPtr')) then begin
       ObjectsSourcesDataSet.Append;
       ObjectsSourcesDataSet.FieldValues['ObjectPtr'] := Integer(Pointer(ANode));
-      ObjectsSourcesDataSet.FieldValues['Name'] := ANode.NodeText;
+      if ANode.InheritsFrom(TSSMFolder) then
+        ObjectsSourcesDataSet.FieldValues['Name'] := TSSMFolder(ANode).FullName
+      else
+        ObjectsSourcesDataSet.FieldValues['Name'] := ANode.NodeText;
+
+      if ANode.InheritsFrom(TSSMProject) then
+        ObjectsSourcesDataSet.FieldValues['Type'] := CSourceType_Project
+      else if ANode.InheritsFrom(TSSMSource) then
+        ObjectsSourcesDataSet.FieldValues['Type'] := CSourceType_Source
+      else if ANode.InheritsFrom(TSSMFolder) then
+        ObjectsSourcesDataSet.FieldValues['Type'] := CSourceType_Folder;
       ObjectsSourcesDataSet.Post;
       Result := True;
     end else begin
@@ -667,7 +726,7 @@ begin
     ParamsDataSet.Open;
     ParamsDataSet.Clear;
     ParamsDataSet.Append;
-    ParamsDataSet.FieldValues['ScanSubFolders'] := IsNull(AParams.Values['ScanSubFolders'], True);
+    ParamsDataSet.FieldValues[CField_ScanSubFolders] := IsNull(AParams.Values[CField_ScanSubFolders], True);
     ParamsDataSet.FieldValues['IgnoreNonParsedScripts'] := IsNull(AParams.Values['IgnoreNonParsedScripts'], True);
 
     ObjectsSourcesDataSet.Open;
@@ -675,11 +734,11 @@ begin
 
     if Assigned(LObjectsSource) then begin
       _ObjectsSourcesAdd(LObjectsSource);
-      ParamsDataSet.FieldValues['Source_Ptr'] := Integer(Pointer(LObjectsSource));
+      ParamsDataSet.FieldValues[CField_Source_Ptr] := Integer(Pointer(LObjectsSource));
     end;
     if Assigned(LWorkSource) then begin
       _ObjectsSourcesAdd(LWorkSource);
-      ParamsDataSet.FieldValues['Work_Ptr'] := Integer(Pointer(LWorkSource));
+      ParamsDataSet.FieldValues[CField_Work_Ptr] := Integer(Pointer(LWorkSource));
     end;
 
     if not Assigned(LProject) and Assigned(LObjectsSource) and LObjectsSource.InheritsFrom(TSSMSource) then
@@ -693,12 +752,17 @@ begin
       LProject := TSSMFolder(LWorkSource).Project;
 
     if Assigned(LProject) then begin
+      _ObjectsSourcesAdd(LProject);
+
       for I := 0 to LProject.SourcesCount-1 do
         _ObjectsSourcesAdd(LProject.Sources[I]);
+
+      for I := 0 to LProject.FoldersCount-1 do
+        _ObjectsSourcesAdd(LProject.Folders[I]);
     end;
 
     if not Assigned(LObjectsSource) and Assigned(LProject) and (LProject.SourcesCount = 1) then
-      ParamsDataSet.FieldValues['Source_Ptr'] := Integer(Pointer(LProject.Sources[0]));
+      ParamsDataSet.FieldValues[CField_Source_Ptr] := Integer(Pointer(LProject.Sources[0]));
 
   finally
     ObjectsSourcesDataSet.EnableControls;
@@ -889,8 +953,8 @@ procedure TSSMComparerForm.ScriptsSelectControllerFieldChanged(Sender: TObject);
       while not ScriptsDataSet.Eof do begin
         if VarIsEqual(AParentRowId, ScriptsDataSet.FieldValues['ParentRowId']) then begin
           ScriptsDataSet.Edit;
-          ScriptsDataSet.FieldValues['Selected'] := ASelected;
-          if VarIsEqual(ScriptsDataSet.FieldValues['NodeType'], CTreeNodeType_Directory) then
+          ScriptsDataSet.FieldValues[CField_Selected] := ASelected;
+          if VarIsEqual(ScriptsDataSet.FieldValues[CField_NodeType], CTreeNodeType_Directory) then
             _SetChildrenSelected(ScriptsDataSet.FieldValues['RowId'], ASelected);
         end;
         ScriptsDataSet.Next;
@@ -906,10 +970,11 @@ begin
     Exit;
   FIgnoreSelectFieldChanged := True;
   try
-    if VarIsequal(ScriptsDataSet.FieldValues['NodeType'], CTreeNodeType_Directory) then
-      _SetChildrenSelected(ScriptsDataSet.FieldValues['RowId'], IsNull(ScriptsDataSet.FieldValues['Selected'], False));
+    if VarIsequal(ScriptsDataSet.FieldValues[CField_NodeType], CTreeNodeType_Directory) then
+      _SetChildrenSelected(ScriptsDataSet.FieldValues['RowId'], IsNull(ScriptsDataSet.FieldValues[CField_Selected], False));
   finally
     FIgnoreSelectFieldChanged := False;
+    CheckActionUpdate;
   end;
 end;
 

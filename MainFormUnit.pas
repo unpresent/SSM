@@ -910,13 +910,19 @@ begin
 end;
 
 function TMainForm.ShowFormByNode(ANode: TSSMNode): TForm;
+var
+  I : Integer;
 begin
-  Result := TSSMBaseForm(Self.ActiveMDIChild);
-  if  Assigned(Result) and Result.InheritsFrom(TSSMBaseForm)
-  and (TSSMBaseForm(Result).LinkedNode = ANode) then begin
-    Result.BringToFront;
-  end else
-    Result := nil;
+  for I := 0 to MDIChildCount-1 do begin
+    Result := TSSMBaseForm(MDIChildren[I]);
+    if  Assigned(Result) and Result.InheritsFrom(TSSMBaseForm)
+    and (TSSMBaseForm(Result).LinkedNode = ANode) then begin
+      Result.BringToFront;
+      Exit;
+    end;
+  end;
+
+  Result := nil;
 end;
 
 procedure TMainForm.SolutionExplorerCustomDrawDataCell(

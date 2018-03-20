@@ -31,7 +31,8 @@ uses
   cxGraphics, cxLookAndFeels, cxLookAndFeelPainters, cxControls, cxContainer,
   cxEdit, cxGroupBox, cxButtons, cxTextEdit, cxMaskEdit,
   cxDropDownEdit, cxLookupEdit, cxDBLookupEdit, cxDBLookupComboBox, cxMemo,
-  cxSplitter, SynEdit, SynEditHighlighter, SynHighlighterSQL;
+  cxSplitter, SynEdit, SynEditHighlighter, SynHighlighterSQL, dxSkinsCore,
+  dxSkinsDefaultPainters, dxSkinsdxBarPainter;
 
 type
   TSSMFilterEditorForm = class(TSSMBaseForm)

@@ -71,6 +71,12 @@ inherited SSMComparerForm: TSSMComparerForm
           Properties.ListColumns = <
             item
               FieldName = 'Name'
+            end
+            item
+              Fixed = True
+              MinWidth = 40
+              Width = 40
+              FieldName = 'Type'
             end>
           Properties.ListOptions.ShowHeader = False
           Properties.ListSource = ObjectsSourcesDataSource
@@ -107,6 +113,12 @@ inherited SSMComparerForm: TSSMComparerForm
           Properties.ListColumns = <
             item
               FieldName = 'Name'
+            end
+            item
+              Fixed = True
+              MinWidth = 40
+              Width = 40
+              FieldName = 'Type'
             end>
           Properties.ListOptions.ShowHeader = False
           Properties.ListSource = ObjectsSourcesDataSource
@@ -812,12 +824,17 @@ inherited SSMComparerForm: TSSMComparerForm
         Name = 'Name'
         DataType = ftString
         Size = 512
+      end
+      item
+        Name = 'Type'
+        DataType = ftString
+        Size = 40
       end>
     Left = 448
     Top = 24
     Data = {
-      0300020009004F626A656374507472030000000000000004004E616D65010000
-      0200000000000000000000}
+      0300030009004F626A656374507472030000000000000004004E616D65010000
+      02000000000400547970650100280000000000000000000000}
   end
   object ParamsDataSource: TDataSource
     DataSet = ParamsDataSet

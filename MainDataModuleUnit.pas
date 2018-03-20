@@ -2110,23 +2110,26 @@ end;
 function TMainDataModule.ShowComparerForm(ANode: TSSMNode): TForm;
 var
   LParams   : TNamedVariants;
+  LProject  : TSSMProject;
 begin
-  Result := MainForm.ShowFormByNode(ANode);
-  if Assigned(Result) then
-    Exit;
-
   LParams := TNamedVariants.Create(True);
   if ANode.InheritsFrom(TSSMFolder) then begin
     LParams.Values[CParam_WorkSource] := Integer( Pointer(ANode) );
-    LParams.Values[CParam_Project] := Integer( Pointer( TSSMFolder(ANode).Project) );
+    LProject := TSSMFolder(ANode).Project;
   end else if ANode.InheritsFrom(TSSMSource) then begin
     LParams.Values[CParam_WorkSource] := Integer( Pointer(SolutionExplorerViewer.CurrentNode) );
-    LParams.Values[CParam_Project] := Integer( Pointer( TSSMSource(ANode).Project) );
+    LProject := TSSMSource(ANode).Project;
   end else if ANode.InheritsFrom(TSSMProject) then begin
-    LParams.Values[CParam_Project] := Integer( Pointer(ANode) );
+    LProject := TSSMProject(ANode);
+    LParams.Values[CParam_WorkSource] := Integer( Pointer(ANode) );
   end;
 
-  Result := TSSMComparerForm.CreateWithLN(MainForm, ANode, LParams);
+  Result := MainForm.ShowFormByNode(LProject);
+  if Assigned(Result) then
+    Exit;
+
+  LParams.Values[CParam_Project] := Integer( Pointer(LProject) );
+  Result := TSSMComparerForm.CreateWithLN(MainForm, LProject, LParams);
 end;
 
 function TMainDataModule.ShowFilterForm(ANode: TSSMNode): TForm;

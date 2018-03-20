@@ -24,7 +24,6 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
     Height = 24
     Style = lgsCustomBottom
     TabOrder = 4
-    ExplicitTop = 389
     object OkButton: TcxButton
       AlignWithMargins = True
       Left = 663
@@ -46,11 +45,7 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
     Left = 0
     Top = 0
     Align = alClient
-    Padding.Left = 5
-    Padding.Right = 5
-    Padding.Bottom = 5
     Caption = #1060#1080#1083#1100#1090#1088
-    AutoSize = False
     Style.Font.Charset = DEFAULT_CHARSET
     Style.Font.Color = clWindowText
     Style.Font.Height = -11
@@ -58,7 +53,6 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
     Style.Font.Style = [fsBold]
     Style.IsFontAssigned = True
     TabOrder = 5
-    ExplicitHeight = 389
     Height = 460
     Width = 743
     object FolderPanel: TLayoutPanel
@@ -72,8 +66,6 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
       Caption.Font.Height = -11
       Caption.Font.Name = 'Tahoma'
       Caption.Font.Style = []
-      Padding.Top = 1
-      Padding.Bottom = 1
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -102,8 +94,6 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
       Caption.Font.Height = -11
       Caption.Font.Name = 'Tahoma'
       Caption.Font.Style = []
-      Padding.Top = 1
-      Padding.Bottom = 1
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -147,16 +137,12 @@ inherited SSMFilterEditorForm: TSSMFilterEditorForm
       Caption.Font.Height = -11
       Caption.Font.Name = 'Tahoma'
       Caption.Font.Style = []
-      Padding.Top = 1
-      Padding.Bottom = 1
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
       TabOrder = 2
-      ExplicitTop = 201
-      ExplicitHeight = 181
       object WhereMemo: TSynEdit
         Left = 145
         Top = 1
